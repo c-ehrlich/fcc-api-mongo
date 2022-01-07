@@ -1,4 +1,5 @@
 require('dotenv').config();
+const { handleCallback } = require('mongodb/lib/utils');
 const mongoose = require('mongoose');
 
 mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
@@ -14,7 +15,12 @@ const personSchema = new Schema({
 let Person = mongoose.model('Person', personSchema);
 
 const createAndSavePerson = (done) => {
-  done(null /*, data*/);
+  const myPerson = new Person({ name: "John", age: 42, favoriteFoods: ["Pizza", "Lasagna"]});
+
+  myPerson.save((err, data) => {
+    if (err) return console.error(err);
+    done(null, data);
+  })
 };
 
 const createManyPeople = (arrayOfPeople, done) => {
