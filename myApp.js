@@ -95,13 +95,19 @@ const removeManyPeople = (done) => {
   Person.remove({ name: nameToRemove }, (err, outcome) => {
     if (err) return console.error(err);
     done(null, outcome);
-  })
+  });
 };
 
 const queryChain = (done) => {
   const foodToSearch = "burrito";
-
-  done(null /*, data*/);
+  Person.find({ food: foodToSearch })
+    .sort({ name: "asc" })
+    .limit(2)
+    .select("-age")
+    .exec((err, data) => {
+      if (err) return console.error(err);
+      done(null, data);
+    });
 };
 
 /** **Well Done !!**
