@@ -1,8 +1,11 @@
-require('dotenv').config();
-const { handleCallback } = require('mongodb/lib/utils');
-const mongoose = require('mongoose');
+require("dotenv").config();
+const { handleCallback } = require("mongodb/lib/utils");
+const mongoose = require("mongoose");
 
-mongoose.connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true });
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+});
 
 const { Schema } = mongoose;
 
@@ -10,38 +13,42 @@ const personSchema = new Schema({
   name: { type: String, required: true },
   age: Number,
   favoriteFoods: [String],
-})
+});
 
-let Person = mongoose.model('Person', personSchema);
+let Person = mongoose.model("Person", personSchema);
 
 const createAndSavePerson = (done) => {
-  const myPerson = new Person({ name: "John", age: 42, favoriteFoods: ["Pizza", "Lasagna"]});
+  const myPerson = new Person({
+    name: "John",
+    age: 42,
+    favoriteFoods: ["Pizza", "Lasagna"],
+  });
 
   myPerson.save((err, data) => {
     if (err) return console.error(err);
     done(null, data);
-  })
+  });
 };
 
 const createManyPeople = (arrayOfPeople, done) => {
   Person.create(arrayOfPeople, (err, data) => {
     if (err) return console.error(err);
     done(null, data);
-  })
+  });
 };
 
 const findPeopleByName = (personName, done) => {
   Person.find({ name: personName }, (err, data) => {
     if (err) return console.error(err);
     done(null, data);
-  })
+  });
 };
 
 const findOneByFood = (food, done) => {
   Person.findOne({ favoriteFoods: food }, (err, data) => {
     if (err) return console.error(err);
     done(null, data);
-  })
+  });
 };
 
 const findPersonById = (personId, done) => {
@@ -60,13 +67,20 @@ const findEditThenSave = (personId, done) => {
       if (err) return console.error(err);
       done(null, person);
     });
-  })
+  });
 };
 
 const findAndUpdate = (personName, done) => {
   const ageToSet = 20;
-
-  done(null /*, data*/);
+  Person.findOneAndUpdate(
+    { name: personName },
+    { age: ageToSet },
+    { new: true }, // returns the updated object
+    (err, person) => {
+      if (err) return console.error(err);
+      done(null, person);
+    }
+  );
 };
 
 const removeById = (personId, done) => {
